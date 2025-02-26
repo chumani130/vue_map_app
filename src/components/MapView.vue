@@ -62,34 +62,43 @@
           })
           .catch(error => console.error('Error loading store locations:', error));
       },
+      
   
       plotVehiclePath() {
         if (!this.vehiclePath.length) return;
   
         this.vehiclePath.forEach(point => {
-          L.marker([point.latitude, point.longitude], {
-            icon: L.divIcon({
-              className: 'custom-vehicle-marker',
-              html: `<div style="background-color: ${this.getRandomColor()}; width: 12px; height: 12px; border-radius: 50%;"></div>`,
-              iconSize: [12, 12]
-            })
-          })
-          .addTo(this.map)
-          .bindPopup(`
-            <strong>Speed:</strong> ${point.speed} km/h<br>
-            <strong>Heading:</strong> ${point.heading}°<br>
-            <strong>Time:</strong> ${new Date(point.timeStamp * 1000).toLocaleString()}
-          `);
-        });
-  
-        console.log('Vehicle path plotted.');
+    L.circleMarker([point.latitude, point.longitude], {
+      radius: 5,
+      fillColor: 'blue',
+      color: 'blue',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    })
+    .addTo(this.map)
+    .bindPopup(`
+      <strong>Speed:</strong> ${point.speed} km/h<br>
+      <strong>Heading:</strong> ${point.heading}°<br>
+      <strong>Time:</strong> ${new Date(point.timeStamp * 1000).toLocaleString()}
+    `);
+  });
+
+  console.log('Vehicle path plotted on map.');
       },
-  
-      getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        return `#${Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('')}`;
-      },
-  
+
+      calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Radius of Earth in km
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; // Distance in km
+    },
+
       plotStoresOnMap() {
         if (!this.stores.length) return;
   
